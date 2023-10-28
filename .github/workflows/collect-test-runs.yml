@@ -61,5 +61,5 @@ jobs:
     - name: print contents
       run: |
         cd integration_test_run_id 
-        ls
+        cat integration_test_run_id.txt
         
