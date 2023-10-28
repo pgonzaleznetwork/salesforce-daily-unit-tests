@@ -18,10 +18,11 @@ jobs:
 
     - name: "Install Salesforce CLI"
       run: |
-        npm install @salesforce/cli --location=global
-        nodeInstallPath=$(npm config get prefix)
-        echo "$nodeInstallPath/bin" >> $GITHUB_PATH
-        sf --version
+        wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
+        mkdir ~/sfdx
+        tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
+        echo "$HOME/sfdx/bin" >> $GITHUB_PATH
+        ~/sfdx/bin/sfdx version
     
     - name: "Populate auth file with SFDX_URL secret"
       shell: bash
@@ -34,7 +35,7 @@ jobs:
 
     - name: "Run all tests"
       run: |
-        sfdx apex run test --test-level RunLocalTests --result-format human --output-dir output
+        sfdx apex run test --test-level RunLocalTests --result-format human --output-dir apex-tests
         pwd
         ls
         
@@ -42,5 +43,5 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: my-artifact
-        path: output/test-run-id.txt
+        path: apex-tests/test-run-id.txt
       
