@@ -36,8 +36,7 @@ jobs:
         name: integration_test_run_id
         # Optional, name is treated as a regular expression if set true
         name_is_regexp: true
-        # Optional, a directory where to extract artifact(s), defaults to the current directory
-        path: extract_here
+       
         # Optional, defaults to current repo
         repo: ${{ github.repository }}
         # Optional, check the workflow run to whether it has an artifact
