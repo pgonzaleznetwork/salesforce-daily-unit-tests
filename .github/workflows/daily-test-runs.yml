@@ -35,9 +35,10 @@ jobs:
 
     - name: "Run all tests"
       run: |
-        mkdir output
         sfdx apex run test --test-level RunLocalTests --result-format human --output-dir output
-        ls output
+        pwd
+        ls
+        
 
     - uses: actions/upload-artifact@v3
       with:
