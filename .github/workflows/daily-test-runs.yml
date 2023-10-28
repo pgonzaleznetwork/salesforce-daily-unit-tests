@@ -37,12 +37,11 @@ jobs:
       run: |
         sfdx apex run test --test-level RunLocalTests --result-format human > ./id.txt
         TEST_RUN_ID=$(node ./extractId.js)
-        echo $TEST_RUN_ID
-        
-        
-
+        echo $TEST_RUN_ID > integration_test_run_id.txt
+        pwd      
+  
     - uses: actions/upload-artifact@v3
       with:
         name: my-artifact
-        path: apex-tests/test-run-id.txt
+        path: integration_test_run_id.txt
       
