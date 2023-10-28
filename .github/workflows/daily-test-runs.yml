@@ -1,4 +1,4 @@
-name: Run all tests
+name: Schedule Test Runs
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  run_tests_integration_org:
+  schedule_tests_integration_org:
     runs-on: ubuntu-latest
 
     steps:
