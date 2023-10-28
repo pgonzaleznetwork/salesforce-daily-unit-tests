@@ -34,7 +34,9 @@ jobs:
       run: sfdx auth:sfdxurl:store -f ./SFDX_INTEGRATION_URL.txt -s -a integration
 
     - name: "Run all tests"
-      run: sfdx apex run test --test-level RunLocalTests   --result-format human --output-dir output
+      run: |
+        sfdx apex run test --test-level RunLocalTests --result-format human --output-dir output
+        ls output
 
     - uses: actions/upload-artifact@v3
       with:
