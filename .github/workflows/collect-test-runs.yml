@@ -59,5 +59,7 @@ jobs:
       
 
     - name: print contents
-      run: cat integration_test_run_id
+      run: |
+        cd integration_test_run_id 
+        ls
         
