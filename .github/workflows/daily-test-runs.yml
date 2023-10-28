@@ -33,13 +33,11 @@ jobs:
     - name: "Authenticate to  Org"
       run: sfdx auth:sfdxurl:store -f ./SFDX_INTEGRATION_URL.txt -s -a integration
 
-    - name: "Run all tests"
+    - name: "Run all tests and store test run Id"
       run: |
         sfdx apex run test --test-level RunLocalTests --result-format human > ./id.txt
-        TEST_RUN_ID=$(node ./extractId.js)
-        echo $TEST_RUN_ID > integration_test_run_id.txt
-        pwd      
-  
+        echo "$(node ./extractId.js)" > integration_test_run_id.txt
+   
     - uses: actions/upload-artifact@v3
       with:
         name: integration_test_run_id
