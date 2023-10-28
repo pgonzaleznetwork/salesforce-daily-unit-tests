@@ -35,7 +35,7 @@ jobs:
 
     - name: "Run all tests"
       run: |
-        sfdx apex run test --test-level RunLocalTests --result-format human --output-dir apex-tests
+        sfdx apex run test --test-level RunLocalTests --result-format human > ./id.txt
         pwd
         ls
         
