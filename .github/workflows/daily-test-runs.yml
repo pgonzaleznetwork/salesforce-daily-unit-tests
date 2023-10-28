@@ -18,11 +18,11 @@ jobs:
 
     - name: "Install Salesforce CLI"
       run: |
-        wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.gz
-        mkdir ~/sfdx
-        tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
-        echo "$HOME/sfdx/bin" >> $GITHUB_PATH
-        ~/sfdx/bin/sfdx version
+        wget https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-linux-x64.tar.xz
+        mkdir ~/cli/sf
+        tar xJf sf-linux-x64.tar.xz -C ~/cli/sf --strip-components 1
+        echo "$HOME/cli/sf/bin" >> $GITHUB_PATH
+        sf version
     
     - name: "Populate auth file with SFDX_URL secret"
       shell: bash
