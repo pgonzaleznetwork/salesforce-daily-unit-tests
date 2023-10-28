@@ -33,7 +33,7 @@ jobs:
         # is treated as a regular expression if input name_is_regexp is true
         # will download only those artifacts with a name that matches this regular expression
         # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions
-        name: artifact_name
+        name: integration_test_run_id
         # Optional, name is treated as a regular expression if set true
         name_is_regexp: true
         # Optional, a directory where to extract artifact(s), defaults to the current directory
@@ -58,6 +58,7 @@ jobs:
         # Optional, ignore forks when searching for artifacts
         # default true
         allow_forks: false
+
     - name: print contents
       run: ls
         
