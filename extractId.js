@@ -12,7 +12,7 @@ fs.readFile('id.txt', 'utf8', (err, data) => {
   
     if (match && match[1]) {
       const extractedId = match[1];
-      console.log(`Extracted Id: ${extractedId}`);
+      console.log(extractedId);
     } else {
       console.log('Id not found in the file content.');
     }
