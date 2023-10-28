@@ -1,4 +1,4 @@
-name: Midnight GMT Workflow
+name: Run all tests
 
 on:
   schedule:
@@ -12,11 +12,32 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - run: mkdir -p path/to/artifact
-    - run: echo hello > path/to/artifact/world.txt
+    - uses: actions/setup-node@v3
+        with:
+          node-version: "14"
+
+    - name: "Install Salesforce CLI"
+      run: |
+        wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
+        mkdir ~/sfdx
+        tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
+        echo "$HOME/sfdx/bin" >> $GITHUB_PATH
+        ~/sfdx/bin/sfdx version
     
+    - name: "Populate auth file with SFDX_URL secret"
+      shell: bash
+      run: |
+        echo ${{ secrets.SFDX_INTEGRATION_URL}} > ./SFDX_INTEGRATION_URL.txt
+
+    # Authenticate to org using the URL stored in the text file
+    - name: "Authenticate to  Org"
+      run: sfdx auth:sfdxurl:store -f ./SFDX_INTEGRATION_URL.txt -s -a integration
+
+    - name: "Run all tests"
+      run: sfdx apex run test --test-level RunLocalTests   --result-format human --output-dir output
+
     - uses: actions/upload-artifact@v3
       with:
         name: my-artifact
-        path: path/to/artifact/world.txt
+        path: output/test-run-id.txt
       
