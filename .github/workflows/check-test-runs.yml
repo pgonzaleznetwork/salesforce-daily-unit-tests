@@ -98,11 +98,40 @@ jobs:
           echo "UAT_TEST_RESULT=PASS" >> $GITHUB_ENV
         fi
 
-  send_slack_message:
-    runs-on: ubuntu-latest
-    needs: [check_tests_integration_org,check_tests_UAT_org]
-    steps:
-      - name: Post to a Slack channel
+    - name: Post to a Slack channel
+      id: slack
+      uses: slackapi/slack-github-action@v1.24.0
+        with:
+          # Slack channel id, channel name, or user id to post message.
+          # See also: https://api.slack.com/methods/chat.postMessage#channels
+          # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
+          channel-id: 'C062G1V3KKK'
+          # For posting a simple plain text message
+          payload: |
+            {
+              "text": "UAT Test Runs Finished",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "UAT org test run result: ${{env.UAT_TEST_RESULT}}"
+                  }
+                }
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "See results here ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      
+
+
         id: slack
         uses: slackapi/slack-github-action@v1.24.0
         with:
