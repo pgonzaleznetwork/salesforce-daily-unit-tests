@@ -47,6 +47,47 @@ jobs:
       run: |
         sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}}
         
+  check_tests_UAT_org:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Download artifact
+      id: download-artifact
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        workflow: schedule-test-runs.yml
+        workflow_conclusion: success
+        name: uat_test_run_id
+        name_is_regexp: true
+
+    - name: print contents
+      run: |
+        cd uat_test_run_id 
+        UAT_TEST_RUN_ID=$(cat uat_test_run_id.txt)
+        echo "UAT_TEST_RUN_ID=$UAT_TEST_RUN_ID" >> $GITHUB_ENV
+    
+    - name: "Install Salesforce CLI"
+      run: |
+        wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
+        mkdir ~/sfdx
+        tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
+        echo "$HOME/sfdx/bin" >> $GITHUB_PATH
+        ~/sfdx/bin/sfdx version
+    
+    - name: "Populate auth file with SFDX_URL secret"
+      shell: bash
+      run: |
+        echo ${{ secrets.SFDX_UAT_URL}} > ./SFDX_UAT_URL.txt
+
+    # Authenticate to org using the URL stored in the text file
+    - name: "Authenticate to  Org"
+      run: sfdx auth:sfdxurl:store -f ./SFDX_UAT_URL.txt -s -a uat
+
+    - name: "Extract apex test results"
+      run: |
+        sf apex get test -i ${{env.UAT_TEST_RUN_ID}}
+        
    
     
     
