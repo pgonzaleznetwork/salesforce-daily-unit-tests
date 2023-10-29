@@ -43,14 +43,13 @@ jobs:
     - name: "Authenticate to  Org"
       run: sfdx auth:sfdxurl:store -f ./SFDX_INTEGRATION_URL.txt -s -a integration
 
-    - name: Set INTEGRATION_TEST_RESULT
-      id: set_integration_test_result
+    - name: "Extract apex test results"
       run: |
-        sf apex get test -i ${{ env.INTEGRATION_TEST_RUN_ID }} || true
+        sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} || true
         if [ $? -eq 0 ]; then
-          echo "::set-output name=INTEGRATION_TEST_RESULT::FAIL"
+          echo "INTEGRATION_TEST_RESULT=FAIL" >> $GITHUB_ENV
         else
-          echo "::set-output name=INTEGRATION_TEST_RESULT::PASS"
+          echo "INTEGRATION_TEST_RESULT=PASS" >> $GITHUB_ENV
         fi
         
   check_tests_UAT_org:
@@ -90,25 +89,19 @@ jobs:
     - name: "Authenticate to  Org"
       run: sfdx auth:sfdxurl:store -f ./SFDX_UAT_URL.txt -s -a uat
 
-    - name: Set UAT_TEST_RESULT
-      id: set_uat_test_result
+    - name: "Extract apex test results"
       run: |
-        sf apex get test -i ${{ env.UAT_TEST_RUN_ID }} || true
+        sf apex get test -i ${{env.UAT_TEST_RUN_ID}} || true
         if [ $? -eq 0 ]; then
-          echo "::set-output name=UAT_TEST_RESULT::FAIL"
+          echo "UAT_TEST_RESULT=FAIL" >> $GITHUB_ENV
         else
-          echo "::set-output name=UAT_TEST_RESULT::PASS"
+          echo "UAT_TEST_RESULT=PASS" >> $GITHUB_ENV
         fi
-
 
   send_slack_message:
     runs-on: ubuntu-latest
     needs: [check_tests_integration_org,check_tests_UAT_org]
     steps:
-      - name: Debug variable
-        run: |
-          echo "UAT_TEST_RESULT is ${{ needs.check_tests_UAT_org.outputs.UAT_TEST_RESULT }}"
-
       - name: Post to a Slack channel
         id: slack
         uses: slackapi/slack-github-action@v1.24.0
@@ -126,14 +119,14 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Integration org test run result: ${{ steps.set_integration_test_result.outputs.INTEGRATION_TEST_RESULT }}"
+                    "text": "Integration org test run result: ${{env.INTEGRATION_TEST_RESULT}}"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "UAT org test run result: ${{ steps.set_uat_test_result.outputs.UAT_TEST_RESULT }}"
+                    "text": "UAT org test run result: ${{env.UAT_TEST_RESULT}}"
                   }
                 },
                 {
