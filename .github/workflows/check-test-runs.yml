@@ -1,4 +1,4 @@
-name: Collect Test Runs
+name: Check Test Runs
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  collect_tests_integration_org:
+  check_tests_integration_org:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
