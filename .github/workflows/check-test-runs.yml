@@ -119,7 +119,21 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Finishing running tests ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    "text": "Integration org running tests"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "UAT org running tests"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "See results here ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                   }
                 }
               ]
