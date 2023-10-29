@@ -107,7 +107,7 @@ jobs:
     steps:
       - name: Debug variable
         run: |
-          echo "UAT_TEST_RESULT is ${{ steps.set_uat_test_result.outputs.UAT_TEST_RESULT }}"
+          echo "UAT_TEST_RESULT is ${{ needs.check_tests_UAT_org.outputs.UAT_TEST_RESULT }}"
 
       - name: Post to a Slack channel
         id: slack
