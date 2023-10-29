@@ -119,14 +119,14 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Integration org running tests"
+                    "text": "Integration org test run result: ${{env.INTEGRATION_TEST_RESULT}}"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "UAT org running tests"
+                    "text": "UAT org test run result: ${{env.UAT_TEST_RESULT}}"
                   }
                 },
                 {
