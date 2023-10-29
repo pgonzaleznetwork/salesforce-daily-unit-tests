@@ -43,13 +43,14 @@ jobs:
     - name: "Authenticate to  Org"
       run: sfdx auth:sfdxurl:store -f ./SFDX_INTEGRATION_URL.txt -s -a integration
 
-    - name: "Extract apex test results"
+    - name: Set INTEGRATION_TEST_RESULT
+      id: set_integration_test_result
       run: |
-        sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} || true
+        sf apex get test -i ${{ env.INTEGRATION_TEST_RUN_ID }} || true
         if [ $? -eq 0 ]; then
-          echo "INTEGRATION_TEST_RESULT=FAIL" >> $GITHUB_ENV
+          echo "::set-output name=INTEGRATION_TEST_RESULT::FAIL"
         else
-          echo "INTEGRATION_TEST_RESULT=PASS" >> $GITHUB_ENV
+          echo "::set-output name=INTEGRATION_TEST_RESULT::PASS"
         fi
         
   check_tests_UAT_org:
@@ -89,14 +90,16 @@ jobs:
     - name: "Authenticate to  Org"
       run: sfdx auth:sfdxurl:store -f ./SFDX_UAT_URL.txt -s -a uat
 
-    - name: "Extract apex test results"
+    - name: Set UAT_TEST_RESULT
+      id: set_uat_test_result
       run: |
-        sf apex get test -i ${{env.UAT_TEST_RUN_ID}} || true
+        sf apex get test -i ${{ env.UAT_TEST_RUN_ID }} || true
         if [ $? -eq 0 ]; then
-          echo "UAT_TEST_RESULT=FAIL" >> $GITHUB_ENV
+          echo "::set-output name=UAT_TEST_RESULT::FAIL"
         else
-          echo "UAT_TEST_RESULT=PASS" >> $GITHUB_ENV
+          echo "::set-output name=UAT_TEST_RESULT::PASS"
         fi
+
 
   send_slack_message:
     runs-on: ubuntu-latest
@@ -119,14 +122,14 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Integration org test run result: ${{env.INTEGRATION_TEST_RESULT}}"
+                    "text": "Integration org test run result: ${{ steps.set_integration_test_result.outputs.INTEGRATION_TEST_RESULT }}"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "UAT org test run result: ${{env.UAT_TEST_RESULT}}"
+                    "text": "UAT org test run result: ${{ steps.set_uat_test_result.outputs.UAT_TEST_RESULT }}"
                   }
                 },
                 {
