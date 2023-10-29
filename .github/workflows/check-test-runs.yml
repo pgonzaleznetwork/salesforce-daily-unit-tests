@@ -46,6 +46,11 @@ jobs:
     - name: "Extract apex test results"
       run: |
         sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} || true
+        if [ $? -eq 0 ]; then
+          echo "INTEGRATION_TEST_RESULT=FAIL" >> $GITHUB_ENV
+        else
+          echo "INTEGRATION_TEST_RESULT=PASS" >> $GITHUB_ENV
+        fi
         
   check_tests_UAT_org:
     runs-on: ubuntu-latest
@@ -88,9 +93,9 @@ jobs:
       run: |
         sf apex get test -i ${{env.UAT_TEST_RUN_ID}} || true
         if [ $? -eq 0 ]; then
-          echo "TEST_RESULT=FAIL" >> $GITHUB_ENV
+          echo "UAT_TEST_RESULT=FAIL" >> $GITHUB_ENV
         else
-          echo "TEST_RESULT=PASS" >> $GITHUB_ENV
+          echo "UAT_TEST_RESULT=PASS" >> $GITHUB_ENV
         fi
 
   send_slack_message:
@@ -114,7 +119,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Finishing running tests"
+                    "text": "Finishing running tests ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                   }
                 }
               ]
