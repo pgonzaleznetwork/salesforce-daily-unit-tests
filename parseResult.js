@@ -5,15 +5,8 @@ let summary = testResults.result.summary;
 let tests = testResults.result.tests;
 
 
-let friendlySummary = `
+let friendlySummary = `Completed test runs for ${summary.username} (${summary.hostname})\nResult: ${summary.outcome}\nTests ran: ${summary.testsRan}\nFailed tests: ${summary.failing}`;
 
-Completed test runs for ${summary.username} (${summary.hostname})
-
-Result: ${summary.outcome}
-Tests ran: ${summary.testsRan}
-Failed tests: ${summary.failing}
-
-`
 let failedTests = '';
 let containsFailures = false;
 
@@ -30,9 +23,6 @@ for(const test of tests){
     }
 }
 
-let wholeMessage = `
-${friendlySummary}
-${failedTests}
-`
+let wholeMessage = `${friendlySummary}\n${failedTests}`
 
 console.log(wholeMessage)
