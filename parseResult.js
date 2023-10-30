@@ -4,6 +4,11 @@ let testResults = JSON.parse(fs.readFileSync('result.json'));
 let summary = testResults.result.summary;
 let tests = testResults.result.tests;
 
+let slackPayload = {
+    text: 'Test Runs Finished',
+    blocks: []
+}
+
 let hostname = summary.hostname;
 const firstPart = summary.hostname.match(/\/\/(.*?)\./);
 
@@ -12,17 +17,21 @@ if (firstPart) {
     hostname = firstPart[1];
 }
 
+let summaryText = '';
 
-let slackPayload = {
-    text: 'Test Runs Finished',
-    blocks: []
+if(summary.outcome == 'Fail'){
+     summaryText = `❌ Automated unit testing for ${summary.username} (${hostname}) has ${summary.outcome} with ${summary.testsRan} test runs and ${summary.failing} failure(s)`
 }
+else{
+    summaryText = `✅ Automated unit testing for ${summary.username} (${hostname}) has 🎉${summary.outcome}🎉 `
+}
+
 
 let summaryBlock = {
     type: 'section',
     text: {
         type: 'mrkdwn',
-        text: `Automated unit testing for ${summary.username} (${hostname}) has **${summary.outcome}** ✅ with ${summary.testsRan} test runs and ${summary.failing} failure(s)`
+        text: summaryText
     }
 }
 
