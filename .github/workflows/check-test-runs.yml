@@ -46,7 +46,7 @@ jobs:
     - name: "Extract apex test results"
       run: |
         sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} || true
-        sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} --json > result.json
+        sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} --json > result.json || true
         pwd
         cat result.json
         
