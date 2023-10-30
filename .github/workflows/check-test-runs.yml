@@ -48,13 +48,6 @@ jobs:
         sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} || true
         sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} --json > result.json || true
         node parseResult.js > slackMessage.txt;
-       
-        {
-          echo 'SLACK_MESSAGE<<\n'
-          cat slackMessage.txt
-          echo \n
-        } >> "$GITHUB_ENV"
-        
 
     - name: Post to a Slack channel
       id: slack
@@ -73,7 +66,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "${{env.SLACK_MESSAGE}}"
+                  "text": "$(cat slackMessage.txt)"
                 }
               },
               {
