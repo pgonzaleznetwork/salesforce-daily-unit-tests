@@ -64,20 +64,13 @@ jobs:
         # For posting a simple plain text message
         payload: |
           {
-            "text": "UAT Test Runs Finished",
+            "text": "Integration Test Runs Finished",
             "blocks": [
               {
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
                   "text": "${{ steps.read_content.outputs.content }}"
-                }
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "See results here ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                 }
               }
               ]
@@ -127,11 +120,12 @@ jobs:
     - name: "Extract apex test results"
       run: |
         sf apex get test -i ${{env.UAT_TEST_RUN_ID}} || true
-        if [ $? -eq 0 ]; then
-          echo "UAT_TEST_RESULT=FAIL" >> $GITHUB_ENV
-        else
-          echo "UAT_TEST_RESULT=PASS" >> $GITHUB_ENV
-        fi
+        sf apex get test -i ${{env.UAT_TEST_RUN_ID}} --json > result.json || true
+        node parseResult.js > slackMessage.txt;
+
+    - name: Read slackMessage.txt content
+      id: read_content
+      run: echo "::set-output name=content::$(cat slackMessage.txt)"
 
     - name: Post to a Slack channel
       id: slack
@@ -150,21 +144,11 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "UAT org test run result: ${{env.UAT_TEST_RESULT}}"
-                }
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "See results here ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  "text": "${{ steps.read_content.outputs.content }}"
                 }
               }
               ]
             }
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-      
-
-
        
