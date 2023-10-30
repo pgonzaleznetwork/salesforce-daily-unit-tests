@@ -41,11 +41,13 @@ for(const test of tests){
 
     if(test.Outcome == 'Fail'){
         
+        let testText = `${test.FullName}: ${test.Message}`;
+
         let block = {
             type: 'section',
             text: {
                 type: 'mrkdwn',
-                text: `${test.FullName}: ${test.Message}`
+                text: '`'+testText+'`'
             }
         }
 
