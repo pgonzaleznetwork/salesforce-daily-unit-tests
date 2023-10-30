@@ -5,7 +5,7 @@ let summary = testResults.result.summary;
 let tests = testResults.result.tests;
 
 let slackPayload = {
-    text: 'Integration Test Runs Finished',
+    text: 'Test Runs Finished',
     blocks: []
 }
 
