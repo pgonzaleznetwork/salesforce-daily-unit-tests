@@ -9,7 +9,7 @@ const firstPart = summary.hostname.match(/\/\/(.*?)\./);
 
 
 if (firstPart) {
-    hostname = firstPart;
+    hostname = firstPart[1];
 }
 
 
@@ -22,7 +22,7 @@ let summaryBlock = {
     type: 'section',
     text: {
         type: 'mrkdwn',
-        text: `Automated unit testing for ${summary.username} (${hostname}) has ${summary.outcome} with ${summary.testsRan} test runs and ${summary.failing} failure(s)`
+        text: `Automated unit testing for ${summary.username} (${hostname}) has **${summary.outcome}** ✅ with ${summary.testsRan} test runs and ${summary.failing} failure(s)`
     }
 }
 
