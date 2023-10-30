@@ -47,11 +47,9 @@ jobs:
       run: |
         sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} || true
         sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} --json > result.json || true
-        node parseResult.js > slackMessage.txt;
+        node parseResult.js 
+        ls
 
-    - name: Read slackMessage.txt content
-      id: read_content
-      run: echo "::set-output name=content::$(cat slackMessage.txt)"
 
     - name: Post to a Slack channel
       id: slack
@@ -62,19 +60,7 @@ jobs:
         # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
         channel-id: 'C062G1V3KKK'
         # For posting a simple plain text message
-        payload: |
-          {
-            "text": "Integration Test Runs Finished",
-            "blocks": [
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "${{ steps.read_content.outputs.content }}"
-                }
-              }
-              ]
-            }
+        payload-file-path: "slackPayload.json"
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
        
