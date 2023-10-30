@@ -5,7 +5,7 @@ let summary = testResults.result.summary;
 let tests = testResults.result.tests;
 
 
-let friendlySummary = `Completed test runs for ${summary.username} (${summary.hostname})\nResult: ${summary.outcome}\nTests ran: ${summary.testsRan}\nFailed tests: ${summary.failing}`;
+let friendlySummary = `Completed test runs for ${summary.username} (${summary.hostname}) Result: ${summary.outcome} Tests ran: ${summary.testsRan} Failed tests: ${summary.failing}`;
 
 let failedTests = '';
 let containsFailures = false;
