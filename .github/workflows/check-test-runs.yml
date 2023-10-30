@@ -49,6 +49,10 @@ jobs:
         sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} --json > result.json || true
         node parseResult.js > slackMessage.txt;
 
+    - name: Read slackMessage.txt content
+      id: read_content
+      run: echo "::set-output name=content::$(cat slackMessage.txt)"
+
     - name: Post to a Slack channel
       id: slack
       uses: slackapi/slack-github-action@v1.24.0
@@ -66,7 +70,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "$(cat slackMessage.txt)"
+                  "text": "${{ steps.read_content.outputs.content }}"
                 }
               },
               {
