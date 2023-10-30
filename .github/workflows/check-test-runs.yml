@@ -48,8 +48,13 @@ jobs:
         sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} || true
         sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} --json > result.json || true
         node parseResult.js > slackMessage.txt;
-        SLACK_MESSAGE=$(cat slackMessage.txt)
-        echo "SLACK_MESSAGE=$SLACK_MESSAGE" >> $GITHUB_ENV   
+       
+        {
+          echo 'SLACK_MESSAGE<<\n'
+          cat slackMessage.txt
+          echo \n
+        } >> "$GITHUB_ENV"
+        
 
     - name: Post to a Slack channel
       id: slack
