@@ -5,7 +5,7 @@ let summary = testResults.result.summary;
 let tests = testResults.result.tests;
 
 
-let friendlySummary = `Completed test runs for ${summary.username} (${summary.hostname}) Result: ${summary.outcome} Tests ran: ${summary.testsRan} Failed tests: ${summary.failing}`;
+let friendlySummary = `Automated unit testing for ${summary.username} (${summary.hostname}) has ${summary.outcome} with ${summary.testsRan} and ${summary.failing} failures`;
 
 let failedTests = '';
 let containsFailures = false;
@@ -23,6 +23,6 @@ for(const test of tests){
     }
 }
 
-let wholeMessage = `${friendlySummary}\n${failedTests}`
+let wholeMessage = `${friendlySummary}\n\n${failedTests}`
 
 console.log(wholeMessage)
