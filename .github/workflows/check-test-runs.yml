@@ -47,8 +47,43 @@ jobs:
       run: |
         sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} || true
         sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} --json > result.json || true
-        pwd
-        cat result.json
+        node parseResult.js > slackMessage.txt;
+        SLACK_MESSAGE=$(cat slackMessage.txt)
+        echo "SLACK_MESSAGE=$SLACK_MESSAGE" >> $GITHUB_ENV   
+
+    - name: Post to a Slack channel
+      id: slack
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        # Slack channel id, channel name, or user id to post message.
+        # See also: https://api.slack.com/methods/chat.postMessage#channels
+        # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
+        channel-id: 'C062G1V3KKK'
+        # For posting a simple plain text message
+        payload: |
+          {
+            "text": "UAT Test Runs Finished",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "${{env.SLACK_MESSAGE}}"
+                }
+              },
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "See results here ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                }
+              }
+              ]
+            }
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+       
+    
         
   check_tests_UAT_org:
     runs-on: ubuntu-latest
