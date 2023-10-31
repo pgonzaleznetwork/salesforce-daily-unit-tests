@@ -148,7 +148,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text":"See more information *<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|in GitHub Actions>*"
+                  "text":"To see the entire output of the test runs for each org, click *<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|here>*"
                  
                 }
               }
