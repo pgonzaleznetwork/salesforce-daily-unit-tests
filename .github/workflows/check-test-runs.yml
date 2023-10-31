@@ -1,8 +1,9 @@
 name: Check Test Runs
 
 on:
+  # This schedule should be X hours after the schedule-test-runs.yml, depending on how long your tests take to run. This is one is configured at 4 AM, 4 hours after the tests are scheduled. 
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 4 * * *'
   workflow_dispatch:
 
 jobs:
@@ -11,6 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    # Use 3rd party GitHub action to download the artifact created in the previous job. The artifact contains the test run Id
     - name: Download artifact
       id: download-artifact
       uses: dawidd6/action-download-artifact@v2
@@ -20,7 +22,7 @@ jobs:
         name: integration_test_run_id
         name_is_regexp: true
 
-    - name: print contents
+    - name: Store test run Id in env variable
       run: |
         cd integration_test_run_id 
         INTEGRATION_TEST_RUN_ID=$(cat integration_test_run_id.txt)
@@ -39,16 +41,19 @@ jobs:
       run: |
         echo ${{ secrets.SFDX_INTEGRATION_URL}} > ./SFDX_INTEGRATION_URL.txt
 
-    # Authenticate to org using the URL stored in the text file
+
     - name: "Authenticate to  Org"
       run: sfdx auth:sfdxurl:store -f ./SFDX_INTEGRATION_URL.txt -s -a integration
 
+    # First, run the "get test" command just to print the output to the GitHub terminal. This way if you come back to the job, you can see the entire output
+    # The second command is run so that we can put the output on a .json file, that we use to create the slack notification via a nodejs script
+    # The || true command allows the command to return a success code even if the test fails, this allows us to continue running the job, which is
+    # necessary so that we can send the notification
     - name: "Extract apex test results"
       run: |
         sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} || true
         sf apex get test -i ${{env.INTEGRATION_TEST_RUN_ID}} --json > result.json || true
         node parseResult.js 
-        ls
 
 
     - name: Post to a Slack channel
@@ -62,9 +67,7 @@ jobs:
         # For posting a simple plain text message
         payload-file-path: "slackPayload.json"
       env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-       
-    
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }} 
         
   check_tests_UAT_org:
     runs-on: ubuntu-latest
