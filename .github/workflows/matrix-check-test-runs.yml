@@ -1,4 +1,4 @@
-name: Check Test Runs
+name: Matrix Check Test Runs
 
 on:
   # This schedule should be X hours after the schedule-test-runs.yml, depending on how long your tests take to run. This is one is configured at 4 AM, 4 hours after the tests are scheduled. 
