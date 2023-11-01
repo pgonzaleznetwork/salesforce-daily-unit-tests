@@ -20,7 +20,7 @@ jobs:
 
     steps:
 
-    - run: echo what is the secret ${{ secrets[format('{0}_A', env.ENVIRONMENT)] }}
+    - run: echo what is the secret ${{ secrets[format('SFDX_{0}_URL', env.ENVIRONMENT)] }}
 
     - name: Checkout code
       uses: actions/checkout@v2
@@ -38,4 +38,19 @@ jobs:
         echo "$HOME/sfdx/bin" >> $GITHUB_PATH
         ~/sfdx/bin/sfdx version
 
-    
+    - name: Populate auth file with SFDX_URL secret
+      run: echo ${{ secrets[format('SFDX_{0}_URL', env.ENVIRONMENT)] }} > ./SFDX_${{ matrix.org_type }}_URL.txt
+
+    - name: Authenticate to Org
+      run: sfdx auth:sfdxurl:store -f ./SFDX_${{ matrix.org_type }}_URL.txt -s -a ${{ matrix.org_type }}
+
+    - name: Run all tests and store test run Id
+      run: |
+        sfdx apex run test --test-level RunLocalTests --result-format human > ./id.txt
+        echo "$(node ./extractId.js)" > ${{ matrix.org_type }}_test_run_id.txt
+
+    - name: Upload the test run Id as an artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.org_type }}_test_run_id
+        path: ${{ matrix.org_type }}_test_run_id.txt
