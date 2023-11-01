@@ -23,12 +23,7 @@ jobs:
     - run: echo what is the secret ${{ secrets[format('SFDX_{0}_URL', env.ENVIRONMENT)] }}
 
     - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: "14"
+      uses: actions/checkout@v4
 
     - name: Install Salesforce CLI
       run: |
@@ -50,7 +45,7 @@ jobs:
         echo "$(node ./extractId.js)" > ${{ matrix.org_type }}_test_run_id.txt
 
     - name: Upload the test run Id as an artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.org_type }}_test_run_id
         path: ${{ matrix.org_type }}_test_run_id.txt
