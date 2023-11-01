@@ -13,9 +13,15 @@ jobs:
       matrix:
         org_type: [INTEGRATION, UAT]
 
+    env:
+        ENVIRONMENT: ${{ matrix.org_type }}
+
     runs-on: ubuntu-latest
 
     steps:
+
+    - run: echo what is the secret ${{ secrets[format('{0}_A', env.ENVIRONMENT)] }}
+
     - name: Checkout code
       uses: actions/checkout@v2
 
