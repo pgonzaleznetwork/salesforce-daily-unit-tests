@@ -1,0 +1,50 @@
+name: Matrix Schedule Test Runs
+
+on:
+  schedule:
+    # Modify this to specify when the job should run. The below is daily at 12 AM GMT
+    - cron: '0 0 * * *'
+  # Allows the workflow to be run manually through the GitHub UI
+  workflow_dispatch:
+
+jobs:
+  schedule_tests:
+    strategy:
+      matrix:
+        org_type: [INTEGRATION, UAT]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: "14"
+
+    - name: Install Salesforce CLI
+      run: |
+        wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
+        mkdir ~/sfdx
+        tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
+        echo "$HOME/sfdx/bin" >> $GITHUB_PATH
+        ~/sfdx/bin/sfdx version
+
+    - name: Populate auth file with SFDX_URL secret
+      run: echo ${{ secrets.SFDX_${{ matrix.org_type }}_URL}} > ./SFDX_${{ matrix.org_type }}_URL.txt
+
+    - name: Authenticate to Org
+      run: sfdx auth:sfdxurl:store -f ./SFDX_${{ matrix.org_type }}_URL.txt -s -a ${{ matrix.org_type }}
+
+    - name: Run all tests and store test run Id
+      run: |
+        sfdx apex run test --test-level RunLocalTests --result-format human > ./id.txt
+        echo "$(node ./extractId.js)" > ${{ matrix.org_type }}_test_run_id.txt
+
+    - name: Upload the test run Id as an artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.org_type }}_test_run_id
+        path: ${{ matrix.org_type }}_test_run_id.txt
