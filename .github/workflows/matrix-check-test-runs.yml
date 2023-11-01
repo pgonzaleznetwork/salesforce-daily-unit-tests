@@ -1,4 +1,4 @@
-name: Matrix Check Test Runs
+name: Check Test Runs
 
 on:
   # This schedule should be X hours after the schedule-test-runs.yml, depending on how long your tests take to run. This is one is configured at 4 AM, 4 hours after the tests are scheduled. 
@@ -11,10 +11,10 @@ jobs:
 
     strategy:
       matrix:
-        org_type: [INTEGRATION, UAT]
+        sf_org_alias: [INTEGRATION, UAT]
 
     env:
-        ENVIRONMENT: ${{ matrix.org_type }}
+        ENVIRONMENT: ${{ matrix.sf_org_alias }}
 
     runs-on: ubuntu-latest
     steps:
@@ -25,15 +25,15 @@ jobs:
       id: download-artifact
       uses: dawidd6/action-download-artifact@v2
       with:
-        workflow: matrix-runs.yml
+        workflow: matrix-schedule-test-runs.yml
         workflow_conclusion: success
-        name: ${{ matrix.org_type }}_test_run_id
+        name: ${{ matrix.sf_org_alias }}_test_run_id
         name_is_regexp: true
 
     - name: Store test run Id in env variable
       run: |
-        cd ${{ matrix.org_type }}_test_run_id
-        TEST_RUN_ID=$(cat ${{ matrix.org_type }}_test_run_id.txt)
+        cd ${{ matrix.sf_org_alias }}_test_run_id
+        TEST_RUN_ID=$(cat ${{ matrix.sf_org_alias }}_test_run_id.txt)
         echo "TEST_RUN_ID=$TEST_RUN_ID" >> $GITHUB_ENV
     
     - name: "Install Salesforce CLI"
@@ -45,10 +45,10 @@ jobs:
         ~/sfdx/bin/sfdx version
     
     - name: Populate auth file with SFDX_URL secret
-      run: echo ${{ secrets[format('SFDX_{0}_URL', env.ENVIRONMENT)] }} > ./SFDX_${{ matrix.org_type }}_URL.txt
+      run: echo ${{ secrets[format('SFDX_{0}_URL', env.ENVIRONMENT)] }} > ./SFDX_${{ matrix.sf_org_alias }}_URL.txt
 
     - name: Authenticate to Org
-      run: sfdx auth:sfdxurl:store -f ./SFDX_${{ matrix.org_type }}_URL.txt -s -a ${{ matrix.org_type }}
+      run: sfdx auth:sfdxurl:store -f ./SFDX_${{ matrix.sf_org_alias }}_URL.txt -s -a ${{ matrix.sf_org_alias }}
 
     # First, run the "get test" command just to print the output to the GitHub terminal. This way if you come back to the job, you can see the entire output
     # The second command is run so that we can put the output on a .json file, that we use to create the slack notification via a nodejs script

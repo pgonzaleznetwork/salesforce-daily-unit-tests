@@ -1,4 +1,4 @@
-name: Matrix Schedule Test Runs
+name: Schedule Test Runs
 
 on:
   schedule:
@@ -11,10 +11,10 @@ jobs:
   schedule_tests:
     strategy:
       matrix:
-        org_type: [INTEGRATION, UAT]
+        sf_org_alias: [INTEGRATION, UAT]
 
     env:
-        ENVIRONMENT: ${{ matrix.org_type }}
+        ENVIRONMENT: ${{ matrix.sf_org_alias }}
 
     runs-on: ubuntu-latest
 
@@ -34,18 +34,18 @@ jobs:
         ~/sfdx/bin/sfdx version
 
     - name: Populate auth file with SFDX_URL secret
-      run: echo ${{ secrets[format('SFDX_{0}_URL', env.ENVIRONMENT)] }} > ./SFDX_${{ matrix.org_type }}_URL.txt
+      run: echo ${{ secrets[format('SFDX_{0}_URL', env.ENVIRONMENT)] }} > ./SFDX_${{ matrix.sf_org_alias }}_URL.txt
 
     - name: Authenticate to Org
-      run: sfdx auth:sfdxurl:store -f ./SFDX_${{ matrix.org_type }}_URL.txt -s -a ${{ matrix.org_type }}
+      run: sfdx auth:sfdxurl:store -f ./SFDX_${{ matrix.sf_org_alias }}_URL.txt -s -a ${{ matrix.sf_org_alias }}
 
     - name: Run all tests and store test run Id
       run: |
         sfdx apex run test --test-level RunLocalTests --result-format human > ./id.txt
-        echo "$(node ./extractId.js)" > ${{ matrix.org_type }}_test_run_id.txt
+        echo "$(node ./extractId.js)" > ${{ matrix.sf_org_alias }}_test_run_id.txt
 
     - name: Upload the test run Id as an artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.org_type }}_test_run_id
-        path: ${{ matrix.org_type }}_test_run_id.txt
+        name: ${{ matrix.sf_org_alias }}_test_run_id
+        path: ${{ matrix.sf_org_alias }}_test_run_id.txt
